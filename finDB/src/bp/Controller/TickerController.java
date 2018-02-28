@@ -55,6 +55,9 @@ public class TickerController {
 				while((line = br.readLine()) != null) {
 					//TODO eliminate Taps
 					if(!line.equals("Symbol")) {
+						// remove all double quotes
+						line = line.replace("\"", "");
+						// split the string after every ","
 						String[] tempTicker = line.split(splitBy);
 						Ticker ticker = new Ticker(tempTicker[0], tempTicker[1]);
 						tickerList.add(ticker);
@@ -65,8 +68,8 @@ public class TickerController {
 			}
 			// ArrayList
 			for (Ticker ticker : tickerList) {
-				System.out.println(tickerList.size());
-				//System.out.println(ticker.getSymbol());
+				//System.out.println(tickerList.size());
+				System.out.println(ticker.getSymbol());
 				//System.out.println(ticker.getDescription());
 			}
 		}
