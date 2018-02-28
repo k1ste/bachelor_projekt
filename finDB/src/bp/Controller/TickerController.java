@@ -6,12 +6,16 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+
+import bp.Model.*;
 
 public class TickerController {
 	// Path of the destination
 	private static String path = "C:\\Users\\Marcel\\Downloads\\Testdaten\\";
 	// exchanges
 	private static String[] ticker = {"AMEX","NASDAQ","NYSE"};
+	public static ArrayList<Ticker> tickerList;
 	
 	public static void main(String[]args) {
 		download();
@@ -37,27 +41,34 @@ public class TickerController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		CSVFormatter();
+		csvFormatter();
 		
 	}
 
-	public static void CSVFormatter() {
-		
+	public static void csvFormatter() {
+		tickerList = new ArrayList<Ticker>();
 		String line = "";
 		// use comma as separator
 		String splitBy = ",";
 		for (String symbol : ticker) {
 			try(BufferedReader br = new BufferedReader(new FileReader(path + symbol + ".csv"))){
 				while((line = br.readLine()) != null) {
-					String[] tempTicker = line.split(splitBy);
-					//TODO Transform Ticker into Object, eliminate Symbol-String and Taps
-					System.out.println(tempTicker[0]);
+					//TODO eliminate Taps
+					if(!line.equals("Symbol")) {
+						String[] tempTicker = line.split(splitBy);
+						Ticker ticker = new Ticker(tempTicker[0], tempTicker[1]);
+						tickerList.add(ticker);
+					}
 				}
 			}catch (IOException e) {
 				e.printStackTrace();
 			}
+			// ArrayList
+			for (Ticker ticker : tickerList) {
+				System.out.println(tickerList.size());
+				//System.out.println(ticker.getSymbol());
+				//System.out.println(ticker.getDescription());
+			}
 		}
-		
-		
 	}
 }
