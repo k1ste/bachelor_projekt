@@ -12,7 +12,7 @@ import bp.Model.*;
 
 public class TickerController {
 	// Path of the destination
-	private String path = "C:\\Users\\hanne\\Desktop";
+	private String path = "C:\\Users\\Felix\\Desktop\\";
 	// exchanges
 	private String[] ticker = {"AMEX", "NASDAQ", "NYSE"};
 	private ArrayList<Ticker> tickerList;
