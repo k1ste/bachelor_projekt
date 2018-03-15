@@ -50,13 +50,19 @@ public class TickerController {
 			try (BufferedReader br = new BufferedReader(new FileReader(path + symbol + ".csv"))) {
 				while ((line = br.readLine()) != null) {
 					// TODO eliminate Taps
-					if (!line.equals("Symbol")) {
+					if (!line.contains("Symbol")) {
+						// remove all tabs
+						line = line.replace("\t", "");
 						// remove all double quotes
 						line = line.replace("\"", "");
 						// split the string after every ","
 						String[] tempTicker = line.split(splitBy);
-						Ticker ticker = new Ticker(tempTicker[0], tempTicker[1]);
-						getTickerList().add(ticker);
+						if(!tempTicker[0].contains(".")){
+							if(!tempTicker[0].contains("^")) {
+								Ticker ticker = new Ticker(tempTicker[0]);
+								tickerList.add(ticker);
+							}
+						}
 					}
 				}
 			} catch (IOException e) {
