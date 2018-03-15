@@ -12,13 +12,13 @@ import bp.Model.*;
 
 public class TickerController {
 	// Path of the destination
-	private String path = "C:\\Users\\Marcel\\Downloads\\Testdaten\\";
+	private String path = "C:\\Users\\hanne\\Desktop";
 	// exchanges
 	private String[] ticker = {"AMEX", "NASDAQ", "NYSE"};
-	public ArrayList<Ticker> tickerList;
+	private ArrayList<Ticker> tickerList;
 
 	public void download() {
-
+		tickerList = new ArrayList<Ticker>();
 		URL url;
 		try {
 			for (String symbol : ticker) {
@@ -42,7 +42,7 @@ public class TickerController {
 	}
 
 	public void csvFormatter() {
-		tickerList = new ArrayList<Ticker>();
+		
 		String line = "";
 		// use comma as separator
 		String splitBy = ",";
@@ -56,24 +56,18 @@ public class TickerController {
 						// split the string after every ","
 						String[] tempTicker = line.split(splitBy);
 						Ticker ticker = new Ticker(tempTicker[0], tempTicker[1]);
-						tickerList.add(ticker);
+						getTickerList().add(ticker);
 					}
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			// ArrayList
-			for (Ticker ticker : tickerList) {
-				// System.out.println(tickerList.size());
-				System.out.println(ticker.getSymbol());
-				// System.out.println(ticker.getDescription());
-			}
+			
 		}
 	}
 	public String getPath() {
 		return path;
 	}
-
 	public void setPath(String path) {
 		this.path = path;
 	}
