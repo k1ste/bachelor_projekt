@@ -51,6 +51,7 @@ public class TickerController {
 				while ((line = br.readLine()) != null) {
 					// TODO eliminate Taps
 					if (!line.contains("Symbol")) {
+						line = line.replace(" ", "");
 						// remove all tabs
 						line = line.replace("\t", "");
 						// remove all double quotes
