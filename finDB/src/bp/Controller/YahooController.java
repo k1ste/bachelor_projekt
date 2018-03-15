@@ -27,6 +27,7 @@ public class YahooController {
 			utmL.add(utm);
 		}
 		
+		
 		for (URLTickerMerge utm : utmL) {
 			try {
 				saveUrl(utm.getTickersymbol().getSymbol(), utm.getUrl());
