@@ -8,10 +8,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import bp.Model.*;
 
-public class TickerController {
+public class TickerController  {
 	// Windows Username
 	String userName = System.getProperty("user.name");
 	// Path of the destination
@@ -22,18 +24,12 @@ public class TickerController {
 
 	public void download() {
 		// create a download folder if not exists
-		String os = System.getProperty("os.name");
 		File dirPath = new File(path);
-		System.out.println(os);
-		// Windows OS
-		if(os.contains("Windows")){
+			// Windows OS
 			if(!dirPath.exists()) {
 			dirPath.mkdir();
-		//TODO Linux path
-		}else
-			System.out.println("Wrong Operating System!");
-		}
-
+			}
+			
 		URL url;
 		try {
 			for (String symbol : ticker) {
@@ -56,7 +52,7 @@ public class TickerController {
 
 	}
 
-	public void csvFormatter() {
+	public void csvFormatter()  {
 		tickerList = new ArrayList<Ticker>();
 		String line = "";
 		// use comma as separator
@@ -73,6 +69,7 @@ public class TickerController {
 						line = line.replace("\"", "");
 						// split the string after every ","
 						String[] tempTicker = line.split(splitBy);
+						// remove all ticker with "." or "^"
 						if(!tempTicker[0].contains(".")){
 							if(!tempTicker[0].contains("^")) {
 								Ticker ticker = new Ticker(tempTicker[0]);
@@ -84,6 +81,20 @@ public class TickerController {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		}
+		// Sorting arraylist in alphabetical order 
+		Collections.sort(tickerList, new Comparator<Ticker>() {
+            @Override
+            public int compare(Ticker item, Ticker t1) {
+                String s1 = item.getSymbol();
+                String s2 = t1.getSymbol();
+                return s1.compareToIgnoreCase(s2);
+            }
+
+        });
+		
+		for(Ticker tick : tickerList) {
+			System.out.println(tick.getSymbol());
 		}
 	}
 	public String getPath() {
