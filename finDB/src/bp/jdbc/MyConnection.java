@@ -1,11 +1,13 @@
 package bp.jdbc;
 
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.PreparedStatement;
 import java.sql.Statement;
 
-public class Connection {
+public class MyConnection {
 	
 	static final String JDBC_Driver = "com.mysql.jdbc.Driver"; 
 	static final String DB_URL = "";
@@ -23,7 +25,7 @@ public class Connection {
 			
 //			Verbindung laden.
 			System.out.println("Verbindung wird aufgebaut...");
-			conn = (Connection) DriverManager.getConnection(DB_URL, User, Pass);
+			conn = DriverManager.getConnection(DB_URL, User, Pass);
 			
 //			Statement/Query ausführen
 			System.out.println("Query wird übermittelt.");
