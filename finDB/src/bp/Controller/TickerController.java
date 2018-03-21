@@ -2,6 +2,7 @@ package bp.Controller;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -11,14 +12,29 @@ import java.util.ArrayList;
 import bp.Model.*;
 
 public class TickerController {
+	// Windows Username
+	String userName = System.getProperty("user.name");
 	// Path of the destination
-	private String path = "C:\\Users\\hanne\\Desktop";
+	private String path = "C:\\Users\\" + userName + "\\Downloads\\Testdaten\\";
 	// exchanges
 	private String[] ticker = {"AMEX", "NASDAQ", "NYSE"};
 	private ArrayList<Ticker> tickerList;
 
 	public void download() {
 		tickerList = new ArrayList<Ticker>();
+		// create a download folder if not exists
+		String os = System.getProperty("os.name");
+		File dirPath = new File(path);
+		System.out.println(os);
+		// Windows OS
+		if(os.contains("Windows")){
+			if(!dirPath.exists()) {
+			dirPath.mkdir();
+		//TODO Linux path
+		}else
+			System.out.println("Wrong Operating System!");
+		}
+
 		URL url;
 		try {
 			for (String symbol : ticker) {
@@ -69,7 +85,6 @@ public class TickerController {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
 		}
 	}
 	public String getPath() {
