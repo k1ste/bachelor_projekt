@@ -3,10 +3,12 @@ package bp.Model;
 public class URLTickerMerge {
 	private String url;
 	private Ticker tickersymbol;
-
-	public URLTickerMerge(String url, Ticker tickersymbol) {
+  private String crumb;
+	
+  public URLTickerMerge(String url, Ticker tickersymbol, String crumb) {
 		this.url = url;
 		this.tickersymbol = tickersymbol;
+		this.setCrumb(crumb);
 	}
 	public String getUrl() {
 		return url;
@@ -19,5 +21,11 @@ public class URLTickerMerge {
 	}
 	public void setTickersymbol(Ticker tickersymbol) {
 		this.tickersymbol = tickersymbol;
+	}
+	public String getCrumb() {
+		return crumb;
+	}
+	public void setCrumb(String crumb) {
+		this.crumb = crumb;
 	}
 }
