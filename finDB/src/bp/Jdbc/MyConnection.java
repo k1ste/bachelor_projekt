@@ -10,12 +10,13 @@ import java.sql.Statement;
 public class MyConnection {
 	
 	static final String JDBC_Driver = "com.mysql.jdbc.Driver"; 
-	static final String DB_URL = "";
+	static final String DB_URL = "jdbc:mysql://localhost/testba";
 	
-	static final String User = ""; 
+	static final String User = "root"; 
 	static final String Pass = ""; 
 	
-	public void connect() {
+//	public static void main (String[] args) {
+	public void connection() {
 		Connection conn = null;
 		Statement stmt = null;
 		
@@ -31,8 +32,24 @@ public class MyConnection {
 			System.out.println("Query wird übermittelt.");
 			stmt = ((java.sql.Connection) conn).createStatement();
 			String sql;
-			sql = "SELECT * FROM TABLE";
+			sql = "SELECT * FROM testba";
 			ResultSet rs = stmt.executeQuery(sql);
+			
+// 			Daten auslesen und anzeigen
+			while (rs.next()) {
+				int Ident = rs.getInt("Ident");
+				String Content = rs.getString("Content");
+				
+				System.out.println("Ident: " + Ident);
+				System.out.println("Content: " + Content);
+				System.out.println();
+			}
+			
+// 			"Aufräumen"
+			rs.close();
+			stmt.close();
+			conn.close();
+			System.out.println("Done!");
 		} 
 
 		catch (Exception e) {
