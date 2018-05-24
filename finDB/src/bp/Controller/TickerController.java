@@ -13,9 +13,9 @@ import bp.Model.*;
 
 public class TickerController {
 	// Windows Username
-	String userName = System.getProperty("user.name");
+	//String userName = System.getProperty("user.name");
 	// Path of the destination
-	private String path = "C:\\Users\\" + userName + "\\Downloads\\Testdaten\\";
+	private String path = "C:\\Users\\hanne\\Downloads\\Testdaten\\";
 	// exchanges
 	private String[] ticker = {"AMEX", "NASDAQ", "NYSE"};
 	private ArrayList<Ticker> tickerList;
@@ -87,6 +87,8 @@ public class TickerController {
 			}
 		}
 	}
+	
+	
 	public String getPath() {
 		return path;
 	}

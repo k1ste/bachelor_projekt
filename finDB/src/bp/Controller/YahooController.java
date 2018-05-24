@@ -2,88 +2,131 @@ package bp.Controller;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.jws.Oneway;
+
 import bp.Model.Ticker;
-import bp.Model.URLTickerMerge;
 
 public class YahooController {
-	private ArrayList<URLTickerMerge> utmL;
+	private ArrayList<Ticker> errorList;
+	public TickerController tc;
 	public YahooController() {
-
+		tc = new TickerController();
+		tc.download();
+		errorList = new ArrayList<>();
+		errorList.clear();
+		doSomething(tc.getTickerList());
 	}
 
-	public void generateURLTickerMerge() throws FileNotFoundException {
-		utmL = new ArrayList<URLTickerMerge>();
-		TickerController tickerController = new TickerController();
-		tickerController.download();
-		ArrayList<Ticker> tickerList = tickerController.getTickerList();
-		System.out.print(tickerList.size());
-		for (int i = 0; i < tickerList.size(); ++i) {
-			String urlString = "https://de.finance.yahoo.com/quote/" + tickerList.get(i).getSymbol() + "?p=" + tickerList.get(i).getSymbol();
-			URLTickerMerge utm = new URLTickerMerge(urlString, tickerList.get(i), null);
-			utmL.add(utm);
-		}
+	public void addTickerToErrorList(Ticker t) {
+		geterrorList().add(t);
+	}
 
-		for (URLTickerMerge utm : utmL) {
-			File f = new File(utm.getTickersymbol().getSymbol());
-			if (f.exists()) {
-				utm.setCrumb(readFile(utm.getTickersymbol().getSymbol(), f));
-			} else if (!f.exists()) {
+	public void doSomething(ArrayList<Ticker> toDo) {
+		int i = 0;
+		for (Ticker ticker : toDo) {
+			if (i < 30) {
+				test(ticker);
 				try {
-					downloadURL(utm.getTickersymbol().getSymbol(), utm.getUrl());
-					utm.setCrumb(readFile(utm.getTickersymbol().getSymbol(), f));
+					downloadFile(ticker);					
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
+			++i;
+		}
+		for (Ticker ticker : geterrorList()) {
+			System.out.println(ticker.getSymbol());
 		}
 	}
 
-	public void downloadURL(String symbol, String urlString) throws MalformedURLException, IOException {
-		BufferedInputStream in = null;
-		FileOutputStream fout = null;
+	public void downloadFile(Ticker t) throws IOException {
+		URL url = new URL(t.getYahooDownloadLink());
+		HttpURLConnection con = (HttpURLConnection) url.openConnection();
+		int responseCode = con.getResponseCode();
+		Path p = Paths.get(t.getSymbol() + ".csv");
+		boolean exists = Files.exists(p);
+		if (!exists) {
+			if (responseCode == HttpURLConnection.HTTP_OK) {
+				InputStream inputStream = con.getInputStream();
+				FileOutputStream outputStream = new FileOutputStream(t.getSymbol() + ".csv");
+
+				int bytesRead = -1;
+				byte[] buffer = new byte[4096];
+				while ((bytesRead = inputStream.read(buffer)) != -1) {
+					outputStream.write(buffer, 0, bytesRead);
+				}
+				outputStream.close();
+				inputStream.close();
+				System.out.println(t.getSymbol() + ".csv downloaded");
+			} else {
+				addTickerToErrorList(t);
+				System.out.println("Symbol: " + t.getSymbol() + " , " + con.getResponseMessage() + " , Code: " + con.getResponseCode());
+			}
+			con.disconnect();
+		} else {
+			System.out.println("File: " + t.getSymbol() + " already exists");
+		}
+	}
+
+	public ArrayList<Ticker> geterrorList() {
+		return errorList;
+	}
+
+	public boolean getTickerFromErrorList(String symbol) {
+		for (Ticker ticker : geterrorList()) {
+			if (ticker.getSymbol().equals(symbol)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void test(Ticker t) {
 		try {
-			in = new BufferedInputStream(new URL(urlString).openStream());
-			fout = new FileOutputStream(symbol);
+			CookieManager cm = new CookieManager();
+			cm.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
+			CookieHandler.setDefault(cm);
+			HttpURLConnection connection = (HttpURLConnection) new URL(t.getYahooURL()).openConnection();
+			InputStream stream = connection.getInputStream();
+			int responseCode = connection.getResponseCode();
+			if (responseCode == HttpURLConnection.HTTP_OK) {
+				BufferedReader in = new BufferedReader(new InputStreamReader(stream));
+				String crumb = null;
+				Pattern crumbPattern = Pattern.compile(".*\"CrumbStore\":\\{\"crumb\":\"([^\"]+)\"\\}.*");
+				String inputLine;
+				Matcher m;
+				while ((inputLine = in.readLine()) != null) {
+					m = crumbPattern.matcher(inputLine);
+					if (m.matches()) {
+						crumb = m.group(1);
+						t.setCrumb(crumb);
+					}
 
-			byte data[] = new byte[1024];
-			int count;
-			while ((count = in.read(data, 0, 1024)) != -1) {
-				fout.write(data, 0, count);
+				}
+				in.close();
+			} else {
+				System.out.println("Symbol: " + t.getSymbol() + " , Http code:" + responseCode);
 			}
-			fout.close();
-			in.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+			connection.disconnect();
+		} catch (Exception e) {
 		}
-
-	}
-	public String readFile(String filename, File f) throws FileNotFoundException {
-		@SuppressWarnings("resource")
-		Scanner fileScanner = new Scanner(f);
-		String crumb = null;
-		Pattern crumbPattern = Pattern.compile(".*\"CrumbStore\":\\{\"crumb\":\"([^\"]+)\"\\}.*");
-		if (f.exists()) {
-			while (fileScanner.hasNext()) {
-				String line = fileScanner.next();
-				Matcher matcher = crumbPattern.matcher(line);
-				if (matcher.matches())
-					crumb = matcher.group(1);
-
-			}
-		}
-		return crumb;
 	}
 }
