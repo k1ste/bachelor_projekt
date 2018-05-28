@@ -19,40 +19,30 @@ import java.util.regex.Pattern;
 
 import bp.Model.Ticker;
 
-public class YahooController {
-	private ArrayList<Ticker> errorList;
+public class YahooController implements IDownload {
 	public TickerController tc;
 	public YahooController() {
 		tc = new TickerController();
 		tc.download();
-		errorList = new ArrayList<>();
-		errorList.clear();
-		doSomething(tc.getTickerList());
+		downloadFirst30Ticker(tc.getTickerList());
 	}
 
-	public void addTickerToErrorList(Ticker t) {
-		geterrorList().add(t);
-	}
-
-	public void doSomething(ArrayList<Ticker> toDo) {
+	public void downloadFirst30Ticker(ArrayList<Ticker> toDo) {
 		int i = 0;
 		for (Ticker ticker : toDo) {
 			if (i < 30) {
-				test(ticker);
+				getCrumb(ticker);
 				try {
-					downloadFile(ticker);					
+					downloadCSVFile(ticker);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
 			++i;
 		}
-		for (Ticker ticker : geterrorList()) {
-			System.out.println(ticker.getSymbol());
-		}
 	}
 
-	public void downloadFile(Ticker t) throws IOException {
+	public void downloadCSVFile(Ticker t) throws IOException {
 		URL url = new URL(t.getYahooDownloadLink());
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
 		int responseCode = con.getResponseCode();
@@ -72,7 +62,6 @@ public class YahooController {
 				inputStream.close();
 				System.out.println(t.getSymbol() + ".csv downloaded");
 			} else {
-				addTickerToErrorList(t);
 				System.out.println("Symbol: " + t.getSymbol() + " , " + con.getResponseMessage() + " , Code: " + con.getResponseCode());
 			}
 			con.disconnect();
@@ -81,20 +70,7 @@ public class YahooController {
 		}
 	}
 
-	public ArrayList<Ticker> geterrorList() {
-		return errorList;
-	}
-
-	public boolean getTickerFromErrorList(String symbol) {
-		for (Ticker ticker : geterrorList()) {
-			if (ticker.getSymbol().equals(symbol)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public void test(Ticker t) {
+	public void getCrumb(Ticker t) {
 		try {
 			CookieManager cm = new CookieManager();
 			cm.setCookiePolicy(CookiePolicy.ACCEPT_ALL);

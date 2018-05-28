@@ -8,5 +8,4 @@ public class Main {
 		// TODO Auto-generated method stub
 		YahooController yc = new YahooController();
 	}
-
 }
