@@ -16,7 +16,7 @@ public class MyConnection {
 	static final String Pass = ""; 
 	
 //	public static void main (String[] args) {
-	public void connection() {
+	public static void connection() {
 		Connection conn = null;
 		Statement stmt = null;
 		
@@ -30,23 +30,31 @@ public class MyConnection {
 			
 //			Statement/Query ausführen
 			System.out.println("Query wird übermittelt.");
-			stmt = ((java.sql.Connection) conn).createStatement();
-			String sql;
-			sql = "SELECT * FROM testba";
-			ResultSet rs = stmt.executeQuery(sql);
+//			stmt = ((java.sql.Connection) conn).createStatement();
+//			String sql;
+//			sql = "SELECT * FROM testba";
+//			ResultSet rs = stmt.executeQuery(sql);
+			
+// 			Auslesen der .csv Dateien und erstellen der Insert- und Create-Befehle
+			String QueryReader = "LOAD DATA LOCAL INFILE '" + "C:\\Users\\Felix\\Downloads\\AAPL.csv" + "'INSERT INTO `aapltest` (`Date`, `Open`, `High`, `Low`, `Close`, `Adj Close`, `Volume`) FIELDS TERMINATED BY ','" 
+			+ " LINES TERMINATED BY '\n' ";
+//			Query aus PHP-MyAdmin:
+//			INSERT INTO `aapltest` (`Date`, `Open`, `High`, `Low`, `Close`, `Adj Close`, `Volume`) VALUES ('', '', '', '', '', '', '')
+			stmt = conn.createStatement();
+			stmt.execute(QueryReader);
 			
 // 			Daten auslesen und anzeigen
-			while (rs.next()) {
-				int Ident = rs.getInt("Ident");
-				String Content = rs.getString("Content");
-				
-				System.out.println("Ident: " + Ident);
-				System.out.println("Content: " + Content);
-				System.out.println();
-			}
+//			while (rs.next()) {
+//				int Ident = rs.getInt("Ident");
+//				String Content = rs.getString("Content");
+//				
+//				System.out.println("Ident: " + Ident);
+//				System.out.println("Content: " + Content);
+//				System.out.println();
+//			}
 			
 // 			"Aufräumen"
-			rs.close();
+//			rs.close();
 			stmt.close();
 			conn.close();
 			System.out.println("Done!");
@@ -57,5 +65,9 @@ public class MyConnection {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	public static void main (String[] args) {
+		connection();
 	}
 }
