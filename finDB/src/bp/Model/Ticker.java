@@ -21,6 +21,6 @@ public class Ticker {
 	}
 	
 	public String getIEXURL(){
-		return "https://api.iextrading.com/1.0/stock/"+getSymbol()+"/chart/1d?format=csv";
+		return "https://api.iextrading.com/1.0/stock/"+getSymbol()+"/chart/5y?format=csv";
 	}
 }

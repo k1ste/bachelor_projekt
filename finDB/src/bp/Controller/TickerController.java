@@ -15,7 +15,7 @@ public class TickerController {
 	// Windows Username
 	//String userName = System.getProperty("user.name");
 	// Path of the destination
-	private String path = "C:\\Users\\hanne\\Downloads\\Testdaten\\";
+	private String path = "C:\\Users\\Felix\\Desktop\\";
 	// exchanges
 	private String[] ticker = {"AMEX", "NASDAQ", "NYSE"};
 	private ArrayList<Ticker> tickerList;
