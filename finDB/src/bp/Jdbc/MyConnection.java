@@ -27,21 +27,22 @@ public class MyConnection {
 //			Verbindung laden.
 			System.out.println("Verbindung wird aufgebaut...");
 			conn = DriverManager.getConnection(DB_URL, User, Pass);
+						
+// 			Auslesen der .csv Dateien und erstellen der Insert- und Create-Befehle
+			String QueryReader = "LOAD DATA LOCAL INFILE '" + "C:/Users/Felix/Downloads/AAPL.csv" + "' INTO TABLE aapltest FIELDS TERMINATED BY ','"
+					+ " LINES TERMINATED BY '\n' (`Date`, `Open`, `High`, `Low`, `Close`, `Adj Close`, `Volume`) ";
+//			Query aus PHP-MyAdmin:
+//			INSERT INTO `aapltest` (`Date`, `Open`, `High`, `Low`, `Close`, `Adj Close`, `Volume`) VALUES ('', '', '', '', '', '', '')
+			
+			stmt = conn.createStatement();
+			stmt.execute(QueryReader);
 			
 //			Statement/Query ausführen
-			System.out.println("Query wird übermittelt.");
+//			System.out.println("Query wird übermittelt.");
 //			stmt = ((java.sql.Connection) conn).createStatement();
 //			String sql;
 //			sql = "SELECT * FROM testba";
 //			ResultSet rs = stmt.executeQuery(sql);
-			
-// 			Auslesen der .csv Dateien und erstellen der Insert- und Create-Befehle
-			String QueryReader = "LOAD DATA LOCAL INFILE '" + "C:\\Users\\Felix\\Downloads\\AAPL.csv" + "'INSERT INTO `aapltest` (`Date`, `Open`, `High`, `Low`, `Close`, `Adj Close`, `Volume`) FIELDS TERMINATED BY ','" 
-			+ " LINES TERMINATED BY '\n' ";
-//			Query aus PHP-MyAdmin:
-//			INSERT INTO `aapltest` (`Date`, `Open`, `High`, `Low`, `Close`, `Adj Close`, `Volume`) VALUES ('', '', '', '', '', '', '')
-			stmt = conn.createStatement();
-			stmt.execute(QueryReader);
 			
 // 			Daten auslesen und anzeigen
 //			while (rs.next()) {
@@ -67,7 +68,4 @@ public class MyConnection {
 		
 	}
 	
-	public static void main (String[] args) {
-		connection();
-	}
 }
