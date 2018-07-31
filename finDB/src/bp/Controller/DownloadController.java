@@ -14,11 +14,11 @@ import javax.net.ssl.HttpsURLConnection;
 
 import bp.Model.Ticker;
 
-public class YahooController{
+public class DownloadController{
 	public TickerController tc;
 	private HttpsURLConnection conn;
 
-	public YahooController() {
+	public DownloadController() {
 		tc = new TickerController();
 		tc.download();
 		downloadFirst30Ticker(tc.getTickerList());

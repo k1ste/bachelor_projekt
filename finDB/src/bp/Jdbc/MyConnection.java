@@ -10,7 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 
 import bp.Controller.TickerController;
-import bp.Controller.YahooController;
+import bp.Controller.DownloadController;
 import bp.Model.Ticker;
 
 public class MyConnection {
@@ -35,7 +35,7 @@ public class MyConnection {
 			System.out.println("Verbindung wird aufgebaut...");
 			conn = DriverManager.getConnection(DB_URL, User, Pass);
 			
-			YahooController yc = new YahooController();
+			DownloadController yc = new DownloadController();
 			TickerController tc = new TickerController(); 
 			tc.download();
 			

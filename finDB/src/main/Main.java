@@ -1,6 +1,6 @@
 package main;
 
-import bp.Controller.YahooController;
+import bp.Controller.DownloadController;
 import bp.Jdbc.MyConnection;
 
 public class Main {
