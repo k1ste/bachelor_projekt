@@ -1,6 +1,6 @@
 package bp.Model;
 
-public class Ticker {
+public class Ticker{
 	String symbol;
 	
 	public Ticker(String symbol) {
