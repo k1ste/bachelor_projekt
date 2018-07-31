@@ -14,7 +14,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 import bp.Model.Ticker;
 
-public class YahooController implements IDownload {
+public class YahooController{
 	public TickerController tc;
 	private HttpsURLConnection conn;
 
