@@ -1,13 +1,8 @@
 package bp.Model;
 
-import java.net.URL;
-
 public class Ticker {
 	String symbol;
-	URL yahooURL;
-	String googleURL;
 	String alphaURL;
-	String crumb;
 
 	public Ticker(String symbol) {
 		this.symbol = symbol;
@@ -21,27 +16,11 @@ public class Ticker {
 		this.symbol = symbol;
 	}
 
-	public String getYahooURL() {
-		return "https://de.finance.yahoo.com/quote/" + getSymbol() + "?p=" + getSymbol();
-	}
-
-	public String getGoogleURL() {
-		return googleURL;
-	}
-
 	public String getAlphaURL() {
-		return alphaURL;
+		return "https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol="+ getSymbol()+"&apikey=P1LGMQ36175FIJIL&datatype=csv";
 	}
-
-	public String getCrumb() {
-		return crumb;
-	}
-
-	public void setCrumb(String crumb) {
-		this.crumb = crumb;
-	}
-
-	public String getYahooDownloadLink() {
-		return "https://query1.finance.yahoo.com/v7/finance/download/" + getSymbol() + "?period1=-3600&period2=1521414000&interval=1d&events=history&crumb=" + getCrumb();
+	
+	public String getIEXURL(){
+		return "https://api.iextrading.com/1.0/stock/"+getSymbol()+"/chart/1d?format=csv";
 	}
 }
