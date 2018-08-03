@@ -19,7 +19,7 @@ public class TickerController {
 	// exchanges
 	private String[] ticker = {"AMEX", "NASDAQ", "NYSE"};
 	private ArrayList<Ticker> tickerList;
-
+//blubb
 	public void download() {
 		tickerList = new ArrayList<Ticker>();
 		// create a download folder if not exists
