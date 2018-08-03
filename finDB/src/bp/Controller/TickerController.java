@@ -12,6 +12,21 @@ import java.util.Iterator;
 import bp.Model.*;
 
 public class TickerController {
+	
+	private File exchanges;
+	
+	
+	public TickerController() {
+		exchanges = new File("Exchange");
+		exchanges.mkdir();
+		DownloadController dc = new DownloadController();
+		download();
+		sort();
+		ListToCSV(tickerList);
+		dc.downloadTicker(tickerList);
+		
+	}
+	
 	// exchanges
 	private ArrayList<Exchange> ticker = new ArrayList<Exchange>();
 	private ArrayList<Ticker> tickerList;
@@ -27,7 +42,7 @@ public class TickerController {
 			for (Exchange symbol : ticker) {
 				url = new URL("https://www.nasdaq.com/screening/companies-by-industry.aspx?exchange=" + symbol.getSymbol() + "&render=download");
 				BufferedInputStream bis = new BufferedInputStream(url.openStream());
-				FileOutputStream fos = new FileOutputStream(symbol.getSymbol() + ".csv");
+				FileOutputStream fos = new FileOutputStream(exchanges + "/" +symbol.getSymbol() + ".csv");
 				byte[] buffer = new byte[1024];
 				int count = 0;
 				while ((count = bis.read(buffer, 0, 1024)) != -1) {
@@ -43,11 +58,10 @@ public class TickerController {
 		for (Exchange exchange : ticker) {
 			csvFormatter(exchange);
 		}
-		sort();
 	}
 
 	public void csvFormatter(Exchange e) {
-		Path p = Paths.get(e.getSymbol());
+		Path p = Paths.get(exchanges + "/" + e.getSymbol());
 		String line = "";
 		// use comma as separator
 		String splitBy = ",";
@@ -85,21 +99,18 @@ public class TickerController {
 				return s1.compareToIgnoreCase(s2);
 			}
 		});
-		ListToCSV(tickerList);
-
 	}
 
 	public void ListToCSV(ArrayList<Ticker> toDo) {
 		PrintWriter printWriter = null;
 		try {
-			printWriter = new PrintWriter(new FileWriter("testus"));
-			Iterator<Ticker> iter = toDo.iterator();
-			while (iter.hasNext()) {
-				Object o = iter.next();
-				printWriter.println(o);
+			printWriter = new PrintWriter(new FileWriter("AllTickerSymbols"));
+			for(Ticker tick : toDo) {
+				printWriter.println(tick.getSymbol());
 			}
+			printWriter.close();
 		} catch (IOException e) {
-			System.out.println(toDo.toString());
+			System.out.println("Fehler bei: " + toDo.toString());
 			e.printStackTrace();
 		}
 

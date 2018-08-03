@@ -1,5 +1,6 @@
 package bp.Controller;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,18 +19,11 @@ public class DownloadController{
 	public TickerController tc;
 	private HttpsURLConnection conn;
 
-	public DownloadController() {
-		tc = new TickerController();
-		tc.download();
-		downloadFirst30Ticker(tc.getTickerList());
-	}
-
-	public void downloadFirst30Ticker(ArrayList<Ticker> toDo) {
-		for (int i = 0; i < 30; ++i) {
+	public void downloadTicker(ArrayList<Ticker> toDo) {
+		for(Ticker tick : toDo) {
 			try {
-				downloadCSVFile(toDo.get(i));
-				System.out.println(toDo.get(i).getIEXURL());
-
+				downloadCSVFile(tick);
+				System.out.println(tick.getSymbol());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -37,15 +31,17 @@ public class DownloadController{
 	}
 
 	public void downloadCSVFile(Ticker t) throws IOException {
-		Path path = Paths.get(t.getSymbol()+".csv");
+		File ticker = new File("Ticker");
+		ticker.mkdir();
 		
+		Path path = Paths.get(ticker + "/" + t.getSymbol()+ ".csv");
 		if (Files.notExists(path))
 		{
 			CookieHandler.setDefault(new CookieManager());
 			URL url = new URL(t.getIEXURL());
 			conn = (HttpsURLConnection) url.openConnection();
 			InputStream inputStream = conn.getInputStream();
-			FileOutputStream outputStream = new FileOutputStream(t.getSymbol()+ ".csv");
+			FileOutputStream outputStream = new FileOutputStream(ticker + "/" + t.getSymbol() + ".csv");
 			int bytesRead = -1;
 			byte[] buffer = new byte[4096];
 			while ((bytesRead = inputStream.read(buffer)) != -1) {
