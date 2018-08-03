@@ -1,46 +1,33 @@
 package bp.Controller;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 
 import bp.Model.*;
 
 public class TickerController {
-	// Windows Username
-	//String userName = System.getProperty("user.name");
-	// Path of the destination
-	private String path = "C:\\Users\\Felix\\Desktop\\";
 	// exchanges
-	private String[] ticker = {"AMEX", "NASDAQ", "NYSE"};
+	private ArrayList<Exchange> ticker = new ArrayList<Exchange>();
 	private ArrayList<Ticker> tickerList;
-//blubb
-	public void download() {
-		tickerList = new ArrayList<Ticker>();
-		// create a download folder if not exists
-		String os = System.getProperty("os.name");
-		File dirPath = new File(path);
-		System.out.println(os);
-		// Windows OS
-		if(os.contains("Windows")){
-			if(!dirPath.exists()) {
-			dirPath.mkdir();
-		//TODO Linux path
-		}else
-			System.out.println("Wrong Operating System!");
-		}
 
+	public void download() {
+		ticker.add(new Exchange("AMEX"));
+		ticker.add(new Exchange("NASDAQ"));
+		ticker.add(new Exchange("NYSE"));
+
+		tickerList = new ArrayList<Ticker>();
 		URL url;
 		try {
-			for (String symbol : ticker) {
-				url = new URL("https://www.nasdaq.com/screening/companies-by-industry.aspx?exchange=" + symbol + "&render=download");
+			for (Exchange symbol : ticker) {
+				url = new URL("https://www.nasdaq.com/screening/companies-by-industry.aspx?exchange=" + symbol.getSymbol() + "&render=download");
 				BufferedInputStream bis = new BufferedInputStream(url.openStream());
-				FileOutputStream fos = new FileOutputStream(path + symbol + ".csv");
+				FileOutputStream fos = new FileOutputStream(symbol.getSymbol() + ".csv");
 				byte[] buffer = new byte[1024];
 				int count = 0;
 				while ((count = bis.read(buffer, 0, 1024)) != -1) {
@@ -53,55 +40,69 @@ public class TickerController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		csvFormatter();
-
+		for (Exchange exchange : ticker) {
+			csvFormatter(exchange);
+		}
+		sort();
 	}
 
-	public void csvFormatter() {
-		
+	public void csvFormatter(Exchange e) {
+		Path p = Paths.get(e.getSymbol());
 		String line = "";
 		// use comma as separator
 		String splitBy = ",";
-		for (String symbol : ticker) {
-			try (BufferedReader br = new BufferedReader(new FileReader(path + symbol + ".csv"))) {
-				while ((line = br.readLine()) != null) {
-					// TODO eliminate Taps
-					if (!line.contains("Symbol")) {
-						line = line.replace(" ", "");
-						// remove all tabs
-						line = line.replace("\t", "");
-						// remove all double quotes
-						line = line.replace("\"", "");
-						// split the string after every ","
-						String[] tempTicker = line.split(splitBy);
-						if(!tempTicker[0].contains(".")){
-							if(!tempTicker[0].contains("^")) {
-								Ticker ticker = new Ticker(tempTicker[0]);
-								tickerList.add(ticker);
-							}
+		try (BufferedReader br = new BufferedReader(new FileReader(p + ".csv"))) {
+			while ((line = br.readLine()) != null) {
+				// TODO eliminate Taps
+				if (!line.contains("Symbol")) {
+					line = line.replace(" ", "");
+					// remove all tabs
+					line = line.replace("\t", "");
+					// remove all double quotes
+					line = line.replace("\"", "");
+					// split the string after every ","
+					String[] tempTicker = line.split(splitBy);
+					if (!tempTicker[0].contains(".")) {
+						if (!tempTicker[0].contains("^")) {
+							Ticker ticker = new Ticker(tempTicker[0]);
+							tickerList.add(ticker);
 						}
 					}
 				}
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
+		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
+
 	}
-	
-	
-	public String getPath() {
-		return path;
-	}
-	public void setPath(String path) {
-		this.path = path;
+	public void sort() {
+		// Sorting arraylist in alphabetical order
+		Collections.sort(tickerList, new Comparator<Ticker>() {
+			@Override
+			public int compare(Ticker item, Ticker t1) {
+				String s1 = item.getSymbol();
+				String s2 = t1.getSymbol();
+				return s1.compareToIgnoreCase(s2);
+			}
+		});
+		ListToCSV(tickerList);
+
 	}
 
-	public String[] getTicker() {
-		return ticker;
-	}
+	public void ListToCSV(ArrayList<Ticker> toDo) {
+		PrintWriter printWriter = null;
+		try {
+			printWriter = new PrintWriter(new FileWriter("testus"));
+			Iterator<Ticker> iter = toDo.iterator();
+			while (iter.hasNext()) {
+				Object o = iter.next();
+				printWriter.println(o);
+			}
+		} catch (IOException e) {
+			System.out.println(toDo.toString());
+			e.printStackTrace();
+		}
 
-	public void setTicker(String[] ticker) {
-		this.ticker = ticker;
 	}
 
 	public ArrayList<Ticker> getTickerList() {
