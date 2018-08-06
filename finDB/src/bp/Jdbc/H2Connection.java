@@ -68,30 +68,16 @@ public class H2Connection {
 		}
 	}
 	
-	public void createTableFromCSV(File f){
+	public void createTableFromCSV(File f) throws SQLException {
 		String fileName = f.getName();
 		String out = fileName.substring(0, fileName.indexOf('.'));
-		try {
-			stmt = conn.createStatement();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		String sql1 = "DROP TABLE IF EXISTS " + out+";";
-		String sql2 = "CREATE TABLE " + out + " AS SELECT * FROM CSVREAD('Ticker/" + fileName+"');";
+		stmt = conn.createStatement();
 		
-		try {
-			stmt.executeUpdate(sql1);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
-			stmt.executeUpdate(sql2);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		String sql1 = "DROP TABLE IF EXISTS " + out+";";
+		String sql2 = "CREATE TABLE " + out + " AS SELECT * FROM CSVREAD('" + f.getAbsolutePath() + "');";
+		
+		stmt.executeUpdate(sql1);
+		stmt.executeUpdate(sql2);
 	}
 
 	public void connectCreateTables(ArrayList<Ticker> tList) {
