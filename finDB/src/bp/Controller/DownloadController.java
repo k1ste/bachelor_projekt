@@ -15,12 +15,11 @@ import javax.net.ssl.HttpsURLConnection;
 
 import bp.Model.Ticker;
 
-public class DownloadController{
-	public TickerController tc;
+public class DownloadController {
 	private HttpsURLConnection conn;
 
 	public void downloadTicker(ArrayList<Ticker> toDo) {
-		for(Ticker tick : toDo) {
+		for (Ticker tick : toDo) {
 			try {
 				downloadCSVFile(tick);
 				System.out.println(tick.getSymbol());
@@ -33,10 +32,9 @@ public class DownloadController{
 	public void downloadCSVFile(Ticker t) throws IOException {
 		File ticker = new File("Ticker");
 		ticker.mkdir();
-		
-		Path path = Paths.get(ticker + "/" + t.getSymbol()+ ".csv");
-		if (Files.notExists(path))
-		{
+
+		Path path = Paths.get(ticker + "/" + t.getSymbol() + ".csv");
+		if (Files.notExists(path)) {
 			CookieHandler.setDefault(new CookieManager());
 			URL url = new URL(t.getIEXURL());
 			conn = (HttpsURLConnection) url.openConnection();
@@ -50,8 +48,8 @@ public class DownloadController{
 			outputStream.close();
 			inputStream.close();
 			conn.disconnect();
-		}else{
+		} else {
 			System.out.println("File already exist");
-		}	
+		}
 	}
 }
