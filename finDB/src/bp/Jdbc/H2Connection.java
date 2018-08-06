@@ -21,9 +21,8 @@ public class H2Connection {
 	static final String PASS = "";
 	Connection conn;
 	Statement stmt;
-	
 	public boolean ConnStat;
-
+	TickerController tc;
 	// Standard Konstruktor
 	public H2Connection() {
 		conn = null;
@@ -50,35 +49,29 @@ public class H2Connection {
 		}
 	}
 
-	public void connectCreateTables() {
+	public void connectCreateTables(ArrayList<Ticker> tList) {
 		try {
 			stmt = conn.createStatement();
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		// Für jede Datei im Ornder eine Tabelle anlegen
+		// FÃ¼r jede Datei im Ornder eine Tabelle anlegen
 		ArrayList<Ticker> temp = new ArrayList<Ticker>();
-		MainController tc = new MainController();
-		temp.addAll(tc.getList());
+		temp.addAll(tList);
 		for (Ticker t : temp) {
-			// if (!file.getName().equals("ALL.csv") && !file.getName().equals("FOR.csv")) {
-			String sql1 = "UPDATE " + t.getSymbol() + "IF EXISTS " ;
+			System.out.println(t.getSymbol());
+			String sql1 = "DROP TABLE IF EXISTS " + t.getSymbol()+";";
 			String sql2 = "CREATE TABLE " + t.getSymbol() + " AS SELECT * FROM CSVREAD('Ticker/" + t.getSymbol()
 					+ ".csv');";
 			try {
 				stmt.executeUpdate(sql1);
+				stmt.executeUpdate(sql2);				
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			System.out.println("Execute Update: " + t.getSymbol());
-			try {
-				stmt.executeUpdate(sql2);
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			System.out.println("Execute Update: " + t.getSymbol());			
 		}
 	}
 
@@ -92,13 +85,5 @@ public class H2Connection {
 		} catch (SQLException se) {
 			se.printStackTrace();
 		}
-	}
-	
-	public Connection getConn() {
-		return conn;
-	}
-	
-	public Statement getStmt() {
-		return stmt;
 	}
 }
