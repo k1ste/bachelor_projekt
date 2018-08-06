@@ -3,7 +3,11 @@ package bp.GUI;
 
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.io.File;
+import java.sql.SQLException;
+
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -22,11 +26,14 @@ public class Content extends JPanel {
 	JPanel panel;
 	JLabel label;
 	H2Connection dbConn;
+	JFileChooser chooser;
+	JTextField upload;
+	JLabel label1;
 	
 	public Content() {
 		
 		panel = new JPanel();
-		panel.setLayout(new GridLayout(2, 2));
+		panel.setLayout(new GridLayout(0,2));
 		label = new JLabel();
 		dbConn = new H2Connection();
 		button = new JButton("Connect");
@@ -49,8 +56,31 @@ public class Content extends JPanel {
 		});
 		panel.add(button);
 		panel.add(textField);
-		
-		
+		button = new JButton("Öffnen");
+		upload = new JTextField("", 15);
+		button.addActionListener(e -> {
+			chooser = new JFileChooser();
+			chooser.showOpenDialog(null);
+			upload.setText(chooser.getSelectedFile().getAbsolutePath());
+		});
+		panel.add(button);
+		panel.add(upload);
+		button = new JButton("Erstellen");
+		label1 = new JLabel();
+		button.addActionListener(e -> {
+			File f = new File(upload.getText());
+			try {
+				dbConn.createTableFromCSV(f);
+				label1.setText("Erfolgreich!");
+				label.setForeground (Color.green);
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+				label1.setText("Fehlgeschlagen!");
+				label.setForeground (Color.red);
+			}
+		});
+		panel.add(button);
+		panel.add(label1);
 		add(panel);
 	}
 
