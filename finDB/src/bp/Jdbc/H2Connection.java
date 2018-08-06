@@ -1,13 +1,12 @@
 package bp.Jdbc;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import bp.Controller.MainController;
 import bp.Controller.TickerController;
 import bp.Model.Ticker;
 
@@ -46,6 +45,25 @@ public class H2Connection {
 		} catch (SQLException se) {
 			// Handle errors for JDBC
 			se.printStackTrace();
+		}
+	}
+	
+	public void selectAll(String textField) {
+		String sql1 = "SELECT * FROM " + textField;
+		try {
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery(sql1);
+			//Statement rs = dbConn.getConn().createStatement().executeQuery(sql1);
+			int columns = rs.getMetaData().getColumnCount();
+			while (rs.next()) {
+				for (int i = 1; i <= columns; i++) {
+	                System.out.print(rs.getString(i) + "\t\t");
+	            }
+	            System.out.println();
+		}
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 	}
 
