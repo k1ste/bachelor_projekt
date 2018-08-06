@@ -7,40 +7,38 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
+
 import bp.Model.*;
 
 public class TickerController {
-	
+	//exchanges
+	private ArrayList<Exchange> ticker = new ArrayList<Exchange>();
 	private File exchanges;
+	private DownloadController dc;
+	private ArrayList<Ticker> tickerList;
 	
-	
-	public TickerController() {
+	public void startController() {
 		exchanges = new File("Exchange");
 		exchanges.mkdir();
-		DownloadController dc = new DownloadController();
+		dc = new DownloadController();
 		download();
 		sort();
-		ListToCSV(tickerList);
-		dc.downloadTicker(tickerList);
-		
+		ListToCSV(getTickerList());
+		dc.downloadTicker(getTickerList());
 	}
-	
-	// exchanges
-	private ArrayList<Exchange> ticker = new ArrayList<Exchange>();
-	private ArrayList<Ticker> tickerList;
 
 	public void download() {
 		ticker.add(new Exchange("AMEX"));
 		ticker.add(new Exchange("NASDAQ"));
 		ticker.add(new Exchange("NYSE"));
-
 		tickerList = new ArrayList<Ticker>();
 		URL url;
 		try {
 			for (Exchange symbol : ticker) {
 				url = new URL("https://www.nasdaq.com/screening/companies-by-industry.aspx?exchange=" + symbol.getSymbol() + "&render=download");
 				BufferedInputStream bis = new BufferedInputStream(url.openStream());
-				FileOutputStream fos = new FileOutputStream(exchanges + "/" +symbol.getSymbol() + ".csv");
+				FileOutputStream fos = new FileOutputStream(exchanges + "/" + symbol.getSymbol() + ".csv");
 				byte[] buffer = new byte[1024];
 				int count = 0;
 				while ((count = bis.read(buffer, 0, 1024)) != -1) {
@@ -103,7 +101,7 @@ public class TickerController {
 		PrintWriter printWriter = null;
 		try {
 			printWriter = new PrintWriter(new FileWriter("AllTickerSymbols"));
-			for(Ticker tick : toDo) {
+			for (Ticker tick : toDo) {
 				printWriter.println(tick.getSymbol());
 			}
 			printWriter.close();
