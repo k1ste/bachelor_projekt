@@ -5,6 +5,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+
+import bp.Controller.MainController;
+import bp.Controller.TickerController;
+import bp.Model.Ticker;
 
 public class H2Connection {
 	// JDBC driver name and database URL
@@ -14,36 +19,67 @@ public class H2Connection {
 	// Database credentials
 	static final String USER = "sa";
 	static final String PASS = "";
-	public void connectCreateTables() {
-		Connection conn = null;
-		Statement stmt = null;
+	Connection conn;
+	Statement stmt;
+
+	// Standard Konstruktor
+	public H2Connection() {
+		conn = null;
+		stmt = null;
+	}
+
+	public void connect() {
 		try {
 			// JDBC driver
-			Class.forName(JDBC_DRIVER);
+			try {
+				Class.forName(JDBC_DRIVER);
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 			// Open connection
 			System.out.println("Connecting to database...");
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
-			stmt = conn.createStatement();
-			// Für jede Datei im Ornder eine Tabelle anlegen
-			File f = new File("Ticker");
-			File[] fileArray = f.listFiles();
-			for (File file : fileArray) {
-				if (!file.getName().equals("ALL.csv") && !file.getName().equals("FOR.csv")) {
-					String sql1 = "DROP TABLE IF EXISTS " + file.getName().substring(0, file.getName().indexOf('.'));
-					String sql2 = "CREATE TABLE " + file.getName().substring(0, file.getName().indexOf('.')) + " AS SELECT * FROM CSVREAD('Ticker/" + file.getName() + "');";
-					stmt.executeUpdate(sql1);
-					System.out.println("Execute Update: " + file.getName());
-					stmt.executeUpdate(sql2);
-				}
-			}
 		} catch (SQLException se) {
 			// Handle errors for JDBC
 			se.printStackTrace();
-		} catch (Exception e) {
-			// Handle errors for Class.forName
-			e.printStackTrace();
 		}
+	}
+
+	public void connectCreateTables() {
+		try {
+			stmt = conn.createStatement();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		// Für jede Datei im Ornder eine Tabelle anlegen
+		ArrayList<Ticker> temp = new ArrayList<Ticker>();
+		MainController tc = new MainController();
+		temp.addAll(tc.getList());
+		for (Ticker t : temp) {
+			// if (!file.getName().equals("ALL.csv") && !file.getName().equals("FOR.csv")) {
+			String sql1 = "UPDATE " + t.getSymbol() + "IF EXISTS " ;
+			String sql2 = "CREATE TABLE " + t.getSymbol() + " AS SELECT * FROM CSVREAD('Ticker/" + t.getSymbol()
+					+ ".csv');";
+			try {
+				stmt.executeUpdate(sql1);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.out.println("Execute Update: " + t.getSymbol());
+			try {
+				stmt.executeUpdate(sql2);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void disconnect() {
 		try {
 			System.out.println(conn.isClosed());
 			if (conn != null)
