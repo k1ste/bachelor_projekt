@@ -1,5 +1,6 @@
 package bp.Jdbc;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -66,6 +67,32 @@ public class H2Connection {
 			e1.printStackTrace();
 		}
 	}
+	
+	public void createTableFromCSV(File f){
+		String fileName = f.getName();
+		String out = fileName.substring(0, fileName.indexOf('.'));
+		try {
+			stmt = conn.createStatement();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String sql1 = "DROP TABLE IF EXISTS " + out+";";
+		String sql2 = "CREATE TABLE " + out + " AS SELECT * FROM CSVREAD('Ticker/" + fileName+"');";
+		
+		try {
+			stmt.executeUpdate(sql1);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			stmt.executeUpdate(sql2);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	public void connectCreateTables(ArrayList<Ticker> tList) {
 		try {
@@ -74,7 +101,7 @@ public class H2Connection {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		// Für jede Datei im Ornder eine Tabelle anlegen
+		// FÃ¼r jede Datei im Ornder eine Tabelle anlegen
 		ArrayList<Ticker> temp = new ArrayList<Ticker>();
 		temp.addAll(tList);
 		for (Ticker t : temp) {
