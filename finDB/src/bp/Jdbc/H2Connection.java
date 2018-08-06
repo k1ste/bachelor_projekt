@@ -21,6 +21,7 @@ public class H2Connection {
 	static final String PASS = "";
 	Connection conn;
 	Statement stmt;
+	public boolean ConnStat;
 
 	// Standard Konstruktor
 	public H2Connection() {
@@ -41,6 +42,7 @@ public class H2Connection {
 			// Open connection
 			System.out.println("Connecting to database...");
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			ConnStat = true;
 		} catch (SQLException se) {
 			// Handle errors for JDBC
 			se.printStackTrace();
@@ -85,6 +87,7 @@ public class H2Connection {
 			if (conn != null)
 				conn.close();
 			System.out.println("Connection closed");
+			ConnStat = false;
 		} catch (SQLException se) {
 			se.printStackTrace();
 		}
