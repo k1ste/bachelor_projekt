@@ -21,6 +21,7 @@ public class H2Connection {
 	static final String PASS = "";
 	Connection conn;
 	Statement stmt;
+	
 	public boolean ConnStat;
 
 	// Standard Konstruktor
@@ -91,5 +92,13 @@ public class H2Connection {
 		} catch (SQLException se) {
 			se.printStackTrace();
 		}
+	}
+	
+	public Connection getConn() {
+		return conn;
+	}
+	
+	public Statement getStmt() {
+		return stmt;
 	}
 }
