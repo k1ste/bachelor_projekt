@@ -86,4 +86,12 @@ public class H2Connection {
 			se.printStackTrace();
 		}
 	}
+	
+	public Connection getConn() {
+		return conn;
+	}
+	
+	public Statement getStmt() {
+		return stmt;
+	}
 }
