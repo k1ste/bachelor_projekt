@@ -1,25 +1,15 @@
 package bp.Controller;
 
-import java.util.ArrayList;
-
-import bp.Model.*;
+import bp.Jdbc.H2Connection;
 
 public class MainController {
-	TickerController tc;
-	DownloadController dc;
 
 	public void start() {
-		tc = new TickerController();
-		dc = new DownloadController();
-		tc.download();
-		tc.sort();
-		tc.ListToCSV(tc.getTickerList());
-		dc.downloadTicker(tc.getTickerList());
-
-	}
-
-	public ArrayList<Ticker> getList() {
-		return tc.getTickerList();
-	}
-
+		TickerController tc = new TickerController();
+		tc.startController();
+		H2Connection h2 = new H2Connection();
+		h2.connect();
+		h2.connectCreateTables(tc.getTickerList());
+		h2.disconnect();
+	}	
 }
